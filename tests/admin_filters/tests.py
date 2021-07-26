@@ -345,7 +345,7 @@ class ListFiltersTests(TestCase):
 
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
-        self.assertEqual(list(queryset), [self.django_book, self.djangonaut_book])
+        self.assertCountEqual(list(queryset), [self.django_book, self.djangonaut_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][4]
@@ -371,9 +371,9 @@ class ListFiltersTests(TestCase):
         queryset = changelist.get_queryset(request)
         if (self.today.year, self.today.month) == (self.one_week_ago.year, self.one_week_ago.month):
             # In case one week ago is in the same month.
-            self.assertEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
+            self.assertCountEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
         else:
-            self.assertEqual(list(queryset), [self.django_book, self.djangonaut_book])
+            self.assertCountEqual(list(queryset), [self.django_book, self.djangonaut_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][4]
@@ -399,9 +399,9 @@ class ListFiltersTests(TestCase):
         queryset = changelist.get_queryset(request)
         if self.today.year == self.one_week_ago.year:
             # In case one week ago is in the same year.
-            self.assertEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
+            self.assertCountEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
         else:
-            self.assertEqual(list(queryset), [self.django_book, self.djangonaut_book])
+            self.assertCountEqual(list(queryset), [self.django_book, self.djangonaut_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][4]
@@ -425,7 +425,7 @@ class ListFiltersTests(TestCase):
 
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
-        self.assertEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
+        self.assertCountEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][4]
@@ -464,7 +464,7 @@ class ListFiltersTests(TestCase):
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
         self.assertEqual(queryset.count(), 3)
-        self.assertEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
+        self.assertCountEqual(list(queryset), [self.guitar_book, self.django_book, self.djangonaut_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][4]
@@ -639,7 +639,7 @@ class ListFiltersTests(TestCase):
 
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
-        self.assertEqual(list(queryset), [self.django_book, self.bio_book, self.djangonaut_book])
+        self.assertCountEqual(list(queryset), [self.django_book, self.bio_book, self.djangonaut_book])
 
         # Make sure the last choice is None and is selected
         filterspec = changelist.get_filters(request)[0][2]
@@ -893,7 +893,7 @@ class ListFiltersTests(TestCase):
         queryset = changelist.get_queryset(request)
 
         expected = [python_bookmark, django_bookmark]
-        self.assertEqual(list(queryset), expected)
+        self.assertCountEqual(list(queryset), expected)
 
     def test_booleanfieldlistfilter(self):
         modeladmin = BookAdmin(Book, site)
@@ -914,7 +914,7 @@ class ListFiltersTests(TestCase):
 
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
-        self.assertEqual(list(queryset), [self.bio_book])
+        self.assertCountEqual(list(queryset), [self.bio_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][3]
@@ -929,7 +929,7 @@ class ListFiltersTests(TestCase):
 
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
-        self.assertEqual(list(queryset), [self.guitar_book, self.djangonaut_book])
+        self.assertCountEqual(list(queryset), [self.guitar_book, self.djangonaut_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][3]
@@ -944,7 +944,7 @@ class ListFiltersTests(TestCase):
 
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
-        self.assertEqual(list(queryset), [self.django_book])
+        self.assertCountEqual(list(queryset), [self.django_book])
 
         # Make sure the correct choice is selected
         filterspec = changelist.get_filters(request)[0][3]
@@ -1315,7 +1315,7 @@ class ListFiltersTests(TestCase):
 
         # Make sure the correct queryset is returned
         queryset = changelist.get_queryset(request)
-        self.assertEqual(list(queryset), [self.jack, self.john])
+        self.assertCountEqual(list(queryset), [self.jack, self.john])
 
         filterspec = changelist.get_filters(request)[0][-1]
         self.assertEqual(filterspec.title, 'department')

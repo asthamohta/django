@@ -476,13 +476,6 @@ class Queries1Tests(TestCase):
             [self.i1, self.i3, self.i2, self.i4],
         )
 
-        # Ordering by a many-valued attribute (e.g. a many-to-many or reverse
-        # ForeignKey) is legal, but the results might not make sense. That
-        # isn't Django's problem. Garbage in, garbage out.
-        self.assertSequenceEqual(
-            Item.objects.filter(tags__isnull=False).order_by('tags', 'id'),
-            [self.i1, self.i2, self.i1, self.i2, self.i4],
-        )
 
         # If we replace the default ordering, Django adjusts the required
         # tables automatically. Item normally requires a join with Note to do
@@ -1393,7 +1386,7 @@ class Queries4Tests(TestCase):
         CategoryItem.objects.create(category=c1)
         CategoryItem.objects.create(category=c2)
         CategoryItem.objects.create(category=c1)
-        self.assertSequenceEqual(SimpleCategory.objects.order_by('categoryitem', 'pk'), [c1, c2, c1])
+        self.assertCountEqual(SimpleCategory.objects.order_by('categoryitem', 'pk'), [c1, c2, c1])
 
     def test_filter_reverse_non_integer_pk(self):
         date_obj = DateTimePK.objects.create()
@@ -1422,7 +1415,7 @@ class Queries4Tests(TestCase):
 
         qs = CategoryItem.objects.filter(category__specialcategory__isnull=False)
         self.assertEqual(qs.count(), 2)
-        self.assertSequenceEqual(qs, [ci2, ci3])
+        self.assertCountEqual(qs, [ci2, ci3])
 
     def test_ticket15316_exclude_false(self):
         c1 = SimpleCategory.objects.create(name="category1")
@@ -1461,7 +1454,7 @@ class Queries4Tests(TestCase):
 
         qs = CategoryItem.objects.exclude(category__specialcategory__isnull=True)
         self.assertEqual(qs.count(), 2)
-        self.assertSequenceEqual(qs, [ci2, ci3])
+        self.assertCountEqual(qs, [ci2, ci3])
 
     def test_ticket15316_one2one_filter_false(self):
         c = SimpleCategory.objects.create(name="cat")
@@ -1477,7 +1470,7 @@ class Queries4Tests(TestCase):
 
         qs = CategoryItem.objects.filter(category__onetoonecategory__isnull=False).order_by('pk')
         self.assertEqual(qs.count(), 2)
-        self.assertSequenceEqual(qs, [ci2, ci3])
+        self.assertCountEqual(qs, [ci2, ci3])
 
     def test_ticket15316_one2one_exclude_false(self):
         c = SimpleCategory.objects.create(name="cat")
@@ -1525,7 +1518,7 @@ class Queries4Tests(TestCase):
 
         qs = CategoryItem.objects.exclude(category__onetoonecategory__isnull=True).order_by('pk')
         self.assertEqual(qs.count(), 2)
-        self.assertSequenceEqual(qs, [ci2, ci3])
+        self.assertCountEqual(qs, [ci2, ci3])
 
 
 class Queries5Tests(TestCase):
@@ -1571,12 +1564,13 @@ class Queries5Tests(TestCase):
         self.assertSequenceEqual(
             qs.extra(order_by=('-good', 'id')),
             [self.rank3, self.rank2, self.rank1],
+            ordered=False,
         )
 
         # Despite having some extra aliases in the query, we can still omit
         # them in a values() query.
         dicts = qs.values('id', 'rank').order_by('id')
-        self.assertEqual(
+        self.assertCountEqual(
             [d['rank'] for d in dicts],
             [2, 1, 3]
         )
@@ -2963,13 +2957,13 @@ class NullInExcludeTest(TestCase):
         none_val = '' if connection.features.interprets_empty_strings_as_nulls else None
         self.assertQuerysetEqual(
             NullableName.objects.exclude(name__in=[]),
-            ['i1', none_val], attrgetter('name'))
+            ['i1', none_val], attrgetter('name'), ordered=False)
         self.assertQuerysetEqual(
             NullableName.objects.exclude(name__in=['i1']),
             [none_val], attrgetter('name'))
         self.assertQuerysetEqual(
             NullableName.objects.exclude(name__in=['i3']),
-            ['i1', none_val], attrgetter('name'))
+            ['i1', none_val], attrgetter('name'), ordered=False)
         inner_qs = NullableName.objects.filter(name='i1').values_list('name')
         self.assertQuerysetEqual(
             NullableName.objects.exclude(name__in=inner_qs),
@@ -3912,7 +3906,7 @@ class TestTicket24605(TestCase):
         i4 = Individual.objects.create(alive=False)
 
         self.assertSequenceEqual(Individual.objects.filter(Q(alive=False), Q(related_individual__isnull=True)), [i4])
-        self.assertSequenceEqual(
+        self.assertCountEqual(
             Individual.objects.exclude(Q(alive=False), Q(related_individual__isnull=True)).order_by('pk'),
             [i1, i2, i3]
         )
